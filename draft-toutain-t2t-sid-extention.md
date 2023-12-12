@@ -34,6 +34,7 @@ author:
   email: manoj.gudi@imt-atlantique.net
 normative:  
   RFC2119:
+  RFC7951:
 
 --- abstract
 
@@ -57,3 +58,20 @@ to manipulate YANG Data Model in a constraint environment.
 
 # YANG Data model
 
+A YANG is a modeling language to structure the information and check its conformity. Each element of a YANG Data Model
+is identified through an unique identifier. YANG is based on a hierarchical approach. During the serialization phase, 
+data are represented either in XML or JSON. In this part we will use the JSON representation. {{RFC7951}} indicates how to 
+to form a JSON structure conform to a YANG Data Model:
+
+* Leaves are represented as JSON objects, the key being the leaf name.
+* Lists are defined through arrays, 
+* Identityref is a string containing the hierarchy to 
+
+~~~~
+<CODE BEGINS> file "sensor.yang"
+{::include sensor.yang}
+<CODE ENDS>
+~~~~
+{: #Fig-schc title="Example of a YANG Data Model for sensors"}
+
+{:include sensor.yang}
