@@ -35,6 +35,8 @@ author:
 normative:  
   RFC2119:
   RFC7951:
+  RFC9254:
+  I-D.ietf-core-sid:
 
 --- abstract
 
@@ -119,4 +121,34 @@ to represent the hierarchy. The key of the outer JSON Object is composed of the 
 {: #Fig-JSON title="JSON structure conform to the YANG DM."}
 
 # CBOR Serialization
+
+JSON notation is verbose for constrained networks and objects. To optimize the size of the representation, {{RFC9254}} defines a CBOR serialization also called CORECONF. YANG ASCII identifiers are replaced by unique number. In JSON, the uniqueness is guaranteed by the "namespace" URI, as shown in {{Fig-YDM}}, by construction the rest of the identifiers are unique.
+
+In CORECONF, the uniqueness is guaranteed through the use of positive integers called SID, which replaces the ASCII identifiers.  {{I-D.ietf-core-sid}} defines the allocation process. Module developers may ask for a SID range from their authority. For example, for an IETF module, the IANA will allocate a SID range. 
+
+The  {{Fig-SID-Alloc}} shows an example of this conversion. The range is arbitrarily fixed between 60000 and 60499. Note that the module, the identity and the leaves have an assigned SID. Once assigned. 
+
+~~~~
+$ pyang --sid-generate-file=60000:100 --sid-list sensor.yang 
+
+SID        Assigned to
+---------  --------------------------------------------------
+60000      module sensor
+60001      identity battery-indicator-base-type
+60002      identity high-level
+60003      identity low-level
+60004      identity med-level
+60005      data /sensor:sensorObject
+60006      data /sensor:sensorObject/battery
+60007      data /sensor:sensorObject/sensorReadings
+60008      data /sensor:sensorObject/sensorReadings/index
+60009      data /sensor:sensorObject/sensorReadings/sensorValue
+60010      data /sensor:sensorObject/statusLED
+
+File sensor@unknown.sid created
+Number of SIDs available : 100
+Number of SIDs used : 11
+~~~~
+{: #Fig-SID-Alloc title="JSON structure conform to the YANG DM."}
+
 

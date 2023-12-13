@@ -63,8 +63,9 @@ Table of Contents
    1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
    2.  YANG Data model . . . . . . . . . . . . . . . . . . . . . . .   2
    3.  JSON serialization  . . . . . . . . . . . . . . . . . . . . .   4
-   4.  Normative References  . . . . . . . . . . . . . . . . . . . .   5
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   5
+   4.  CBOR Serialization  . . . . . . . . . . . . . . . . . . . . .   5
+   5.  Normative References  . . . . . . . . . . . . . . . . . . . .   6
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   6
 
 1.  Introduction
 
@@ -102,7 +103,6 @@ Table of Contents
       naming hierarchy to an identity,
 
    *  ...
-
 
 
 
@@ -203,11 +203,11 @@ Internet-Draft                SID Extention                December 2023
 3.  JSON serialization
 
    An example of data, serialized with JSON, and conform to the YANG
-   Data Model, is given Figure 3.
-
-
-
-
+   Data Model, is given Figure 3.  Embedded JSON Objects allows to
+   represent the hierarchy.  The key of the outer JSON Object is
+   composed of the module name and the container name.  The embedded
+   JSON Object associated to this this contains the leaves as keys.  The
+   YANG list is represented by an JSON Array.
 
 
 
@@ -245,7 +245,73 @@ Internet-Draft                SID Extention                December 2023
 
               Figure 3: JSON structure conform to the YANG DM.
 
-4.  Normative References
+4.  CBOR Serialization
+
+   JSON notation is verbose for constrained networks and objects.  To
+   optimize the size of the representation, [RFC9254] defines a CBOR
+   serialization also called CORECONF.  YANG ASCII identifiers are
+   replaced by unique number.  In JSON, the uniqueness is guaranteed by
+   the "namespace" URI, as shown in Figure 1, by construction the rest
+   of the identifiers are unique.
+
+   In CORECONF, the uniqueness is guaranteed through the use of positive
+   integers called SID, which replaces the ASCII identifiers.
+   [I-D.ietf-core-sid] Module developers may ask for a SID range from
+   their authority.  For example, for an IETF module, the IANA will
+   allocate a SID range.
+
+   The Figure 4 shows an exmaple of this conversion, note that the
+   module, the identity and the leaves have an assigned SID.  Once
+   assigned.  The assignation of a SID to an identifier cannot be
+   changed, once the mapping is published.
+
+
+
+
+
+
+
+
+
+
+
+
+
+Toutain & Gudi            Expires 15 June 2024                  [Page 5]
+
+Internet-Draft                SID Extention                December 2023
+
+
+   $ pyang --sid-generate-file=60000:100 --sid-list sensor.yang
+
+   SID        Assigned to
+   ---------  --------------------------------------------------
+   60000      module sensor
+   60001      identity battery-indicator-base-type
+   60002      identity high-level
+   60003      identity low-level
+   60004      identity med-level
+   60005      data /sensor:sensorObject
+   60006      data /sensor:sensorObject/battery
+   60007      data /sensor:sensorObject/sensorReadings
+   60008      data /sensor:sensorObject/sensorReadings/index
+   60009      data /sensor:sensorObject/sensorReadings/sensorValue
+   60010      data /sensor:sensorObject/statusLED
+
+   File sensor@unknown.sid created
+   Number of SIDs available : 100
+   Number of SIDs used : 11
+
+              Figure 4: JSON structure conform to the YANG DM.
+
+5.  Normative References
+
+   [I-D.ietf-core-sid]
+              Veillette, M., Pelov, A., Petrov, I., Bormann, C., and M.
+              Richardson, "YANG Schema Item iDentifier (YANG SID)", Work
+              in Progress, Internet-Draft, draft-ietf-core-sid-23, 30
+              October 2023, <https://datatracker.ietf.org/doc/html/
+              draft-ietf-core-sid-23>.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -256,7 +322,21 @@ Internet-Draft                SID Extention                December 2023
               RFC 7951, DOI 10.17487/RFC7951, August 2016,
               <https://www.rfc-editor.org/info/rfc7951>.
 
+   [RFC9254]  Veillette, M., Ed., Petrov, I., Ed., Pelov, A., Bormann,
+              C., and M. Richardson, "Encoding of Data Modeled with YANG
+              in the Concise Binary Object Representation (CBOR)",
+              RFC 9254, DOI 10.17487/RFC9254, July 2022,
+              <https://www.rfc-editor.org/info/rfc9254>.
+
 Authors' Addresses
+
+
+
+
+Toutain & Gudi            Expires 15 June 2024                  [Page 6]
+
+Internet-Draft                SID Extention                December 2023
+
 
    Laurent Toutain
    Institut MINES TELECOM; IMT Atlantique
@@ -277,4 +357,36 @@ Authors' Addresses
 
 
 
-Toutain & Gudi            Expires 15 June 2024                  [Page 5]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Toutain & Gudi            Expires 15 June 2024                  [Page 7]
