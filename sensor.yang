@@ -3,16 +3,6 @@ module sensor {
   namespace "http://sensorexample.in/sensor-example";
   prefix sen1;
 
-  identity manufacturer {
-    description
-      "Manufacturer of the sensor";
-  }
-
-  identity sensor-type {
-    description
-      "type of the sensor";
-  }
-
   identity battery-indicator-base-type {
     description
       "a base identity for battery level indicator";
@@ -36,29 +26,26 @@ module sensor {
     }
   }
 
-  container sensordata {
-    list dataReadings {
-      key "readingIndex";
-      leaf readingIndex {
-        type uint8;
-      }
-      leaf dataValue {
-        type uint16;
+  container sensorHealth {
+    leaf statusLED {
+      type enumeration {
+        enum green  {value 0;}
+        enum yellow {value 1;}
+        enum red {value 2;}
       }
     }
-  }
-  container sensorHealth {
-    list healthReadings {
-      key "readingIndex";
-      leaf readingIndex {
+    leaf battery {
+        type battery-level;
+    }    
+    list sensorReadings {
+      key "index";
+      leaf index {
         type uint8;
       }
-      leaf healthValue {
+      leaf sensorValue {
         type uint32;
       }
-      leaf battery {
-        type battery-level;
-      }
+
     }
   }
 }

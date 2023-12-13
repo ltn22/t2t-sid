@@ -65,13 +65,30 @@ to form a JSON structure conform to a YANG Data Model:
 
 * Leaves are represented as JSON objects, the key being the leaf name.
 * Lists are defined through arrays, 
-* Identityref is a string containing the hierarchy to 
+* Identityref is a string0 containing the identifier in the YANG naming hierarchy to an identity,
+* ...
+
+The YANG Data Model, in {{Fig-YDM}}, is used to illustrate how data will be serialized. It defines a container
+representing a physical object able to perform several measurements. The physical object is battery powered has a status led able 
+to change color, and a list of attached sensors returning a integer value. 
 
 ~~~~
 <CODE BEGINS> file "sensor.yang"
 {::include sensor.yang}
 <CODE ENDS>
 ~~~~
-{: #Fig-schc title="Example of a YANG Data Model for sensors"}
+{: #Fig-YDM title="Example of a YANG Data Model for sensors"}
 
-{:include sensor.yang}
+The YANG tree regarding this Data Model is given {{Fig-YANG-tree}}
+
+~~~~
+$ pyang -f tree sensor.yang 
+module: sensor
+  +--rw sensorHealth
+     +--rw statusLED?        enumeration
+     +--rw battery?          battery-level
+     +--rw sensorReadings* [index]
+        +--rw index          uint8
+        +--rw sensorValue?   uint32
+~~~~
+{: #Fig-YANG-tree title="YANG tree associated to the DM."}
