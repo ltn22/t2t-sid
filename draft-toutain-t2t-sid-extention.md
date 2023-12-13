@@ -92,3 +92,24 @@ module: sensor
         +--rw sensorValue?   uint32
 ~~~~
 {: #Fig-YANG-tree title="YANG tree associated to the DM."}
+
+
+~~~~
+{
+  "sensor:sensorHealth": {
+    "statusLED": "green",
+    "battery": "sensor:med-level",
+    "sensorReadings": [
+      {
+        "index": 0,
+        "sensorValue": 42
+      },
+      {
+        "index": 1,
+        "sensorValue": 22
+      }
+    ]
+  }
+}
+~~~~
+{: #Fig-JSON title="JSON structure conform to the YANG DM."}
