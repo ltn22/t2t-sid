@@ -26,7 +26,7 @@ module sensor {
     }
   }
 
-  container sensorHealth {
+  container sensorObject {
     leaf statusLED {
       type enumeration {
         enum green  {value 0;}

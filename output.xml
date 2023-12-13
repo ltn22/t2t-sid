@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+  <sensorHealth xmlns="http://sensorexample.in/sensor-example">
+    <statusLED>green</statusLED>
+    <battery>med-level</battery>
+    <sensorReadings>
+      <index>0</index>
+      <sensorValue>42</sensorValue>
+    </sensorReadings>
+  </sensorHealth>
+ 
+

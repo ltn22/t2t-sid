@@ -1,0 +1,12 @@
+{
+  "sensor:sensorHealth": {
+    "statusLED": "green",
+    "battery": "sensor:med-level",
+    "sensorReadings": [
+      {
+        "index": 0,
+        "sensorValue": 42
+      }
+    ]
+  }
+}

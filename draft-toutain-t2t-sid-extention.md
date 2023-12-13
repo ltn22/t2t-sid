@@ -79,12 +79,12 @@ to change color, and a list of attached sensors returning a integer value.
 ~~~~
 {: #Fig-YDM title="Example of a YANG Data Model for sensors"}
 
-The YANG tree regarding this Data Model is given {{Fig-YANG-tree}}
+The YANG tree regarding this Data Model is given {{Fig-YANG-tree}}, the tree displays the module hierarchy. For the module "sensor", a container "sensorObject" contains two leaves ("statusLED", "battery") and a list "sensorReadings".
 
 ~~~~
 $ pyang -f tree sensor.yang 
 module: sensor
-  +--rw sensorHealth
+  +--rw sensorObject
      +--rw statusLED?        enumeration
      +--rw battery?          battery-level
      +--rw sensorReadings* [index]
@@ -93,10 +93,13 @@ module: sensor
 ~~~~
 {: #Fig-YANG-tree title="YANG tree associated to the DM."}
 
+# JSON serialization
+
+An example of data, serialized with JSON, and conform to the YANG Data Model, is given {{Fig-JSON}}. 
 
 ~~~~
 {
-  "sensor:sensorHealth": {
+  "sensor:sensorObject": {
     "statusLED": "green",
     "battery": "sensor:med-level",
     "sensorReadings": [

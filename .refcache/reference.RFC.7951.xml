@@ -1,0 +1,12 @@
+<reference anchor="RFC7951" target="https://www.rfc-editor.org/info/rfc7951">
+  <front>
+    <title>JSON Encoding of Data Modeled with YANG</title>
+    <author fullname="L. Lhotka" initials="L." surname="Lhotka"/>
+    <date month="August" year="2016"/>
+    <abstract>
+      <t>This document defines encoding rules for representing configuration data, state data, parameters of Remote Procedure Call (RPC) operations or actions, and notifications defined using YANG as JavaScript Object Notation (JSON) text.</t>
+    </abstract>
+  </front>
+  <seriesInfo name="RFC" value="7951"/>
+  <seriesInfo name="DOI" value="10.17487/RFC7951"/>
+</reference>
