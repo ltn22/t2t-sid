@@ -63,7 +63,7 @@ Table of Contents
    1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
    2.  YANG Data model . . . . . . . . . . . . . . . . . . . . . . .   2
    3.  Normative References  . . . . . . . . . . . . . . . . . . . .   4
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   4
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   5
 
 1.  Introduction
 
@@ -197,7 +197,34 @@ Internet-Draft                SID Extention                December 2023
 
                  Figure 2: YANG tree associated to the DM.
 
+   {
+     "sensor:sensorHealth": {
+       "statusLED": "green",
+       "battery": "sensor:med-level",
+       "sensorReadings": [
+         {
+           "index": 0,
+           "sensorValue": 42
+         },
+         {
+           "index": 1,
+           "sensorValue": 22
+         }
+       ]
+     }
+   }
+
+              Figure 3: JSON structure conform to the YANG DM.
+
 3.  Normative References
+
+
+
+
+Toutain & Gudi            Expires 15 June 2024                  [Page 4]
+
+Internet-Draft                SID Extention                December 2023
+
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -219,13 +246,6 @@ Authors' Addresses
    Email: Laurent.Toutain@imt-atlantique.fr
 
 
-
-
-Toutain & Gudi            Expires 15 June 2024                  [Page 4]
-
-Internet-Draft                SID Extention                December 2023
-
-
    Manoj Gudi
    Institut MINES TELECOM; IMT Atlantique
    2 rue de la Chataigneraie
@@ -233,26 +253,6 @@ Internet-Draft                SID Extention                December 2023
    35576 Cesson-Sevigne Cedex
    France
    Email: manoj.gudi@imt-atlantique.net
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
