@@ -95,7 +95,8 @@ module: sensor
 
 # JSON serialization
 
-An example of data, serialized with JSON, and conform to the YANG Data Model, is given {{Fig-JSON}}. 
+An example of data, serialized with JSON, and conform to the YANG Data Model, is given {{Fig-JSON}}. Embedded JSON Objects allows 
+to represent the hierarchy. The key of the outer JSON Object is composed of the module name and the container name. The embedded JSON Object associated to this this contains the leaves as keys. The YANG list is represented by an JSON Array.
 
 ~~~~
 {
@@ -116,3 +117,6 @@ An example of data, serialized with JSON, and conform to the YANG Data Model, is
 }
 ~~~~
 {: #Fig-JSON title="JSON structure conform to the YANG DM."}
+
+# CBOR Serialization
+

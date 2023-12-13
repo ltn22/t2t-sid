@@ -62,7 +62,8 @@ Table of Contents
 
    1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
    2.  YANG Data model . . . . . . . . . . . . . . . . . . . . . . .   2
-   3.  Normative References  . . . . . . . . . . . . . . . . . . . .   4
+   3.  JSON serialization  . . . . . . . . . . . . . . . . . . . . .   4
+   4.  Normative References  . . . . . . . . . . . . . . . . . . . .   5
    Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   5
 
 1.  Introduction
@@ -101,7 +102,6 @@ Table of Contents
       naming hierarchy to an identity,
 
    *  ...
-
 
 
 
@@ -149,7 +149,7 @@ Internet-Draft                SID Extention                December 2023
        }
      }
 
-     container sensorHealth {
+     container sensorObject {
        leaf statusLED {
          type enumeration {
            enum green  {value 0;}
@@ -184,11 +184,14 @@ Internet-Draft                SID Extention                December 2023
 
              Figure 1: Example of a YANG Data Model for sensors
 
-   The YANG tree regarding this Data Model is given Figure 2
+   The YANG tree regarding this Data Model is given Figure 2, the tree
+   displays the module hierarchy.  For the module "sensor", a container
+   "sensorObject" contains two leaves ("statusLED", "battery") and a
+   list "sensorReadings".
 
    $ pyang -f tree sensor.yang
    module: sensor
-     +--rw sensorHealth
+     +--rw sensorObject
         +--rw statusLED?        enumeration
         +--rw battery?          battery-level
         +--rw sensorReadings* [index]
@@ -197,8 +200,34 @@ Internet-Draft                SID Extention                December 2023
 
                  Figure 2: YANG tree associated to the DM.
 
+3.  JSON serialization
+
+   An example of data, serialized with JSON, and conform to the YANG
+   Data Model, is given Figure 3.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Toutain & Gudi            Expires 15 June 2024                  [Page 4]
+
+Internet-Draft                SID Extention                December 2023
+
+
    {
-     "sensor:sensorHealth": {
+     "sensor:sensorObject": {
        "statusLED": "green",
        "battery": "sensor:med-level",
        "sensorReadings": [
@@ -216,15 +245,7 @@ Internet-Draft                SID Extention                December 2023
 
               Figure 3: JSON structure conform to the YANG DM.
 
-3.  Normative References
-
-
-
-
-Toutain & Gudi            Expires 15 June 2024                  [Page 4]
-
-Internet-Draft                SID Extention                December 2023
-
+4.  Normative References
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -253,27 +274,6 @@ Authors' Addresses
    35576 Cesson-Sevigne Cedex
    France
    Email: manoj.gudi@imt-atlantique.net
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
