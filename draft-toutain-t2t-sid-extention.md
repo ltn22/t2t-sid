@@ -126,7 +126,7 @@ JSON notation is verbose for constrained networks and objects. To optimize the s
 
 In CORECONF, the uniqueness is guaranteed through the use of positive integers called SID, which replaces the ASCII identifiers.  {{I-D.ietf-core-sid}} defines the allocation process. Module developers may ask for a SID range from their authority. For example, for an IETF module, the IANA will allocate a SID range. 
 
-The  {{Fig-SID-Alloc}} shows an example of this conversion. The range is arbitrarily fixed between 60000 and 60499. Note that the module, the identity and the leaves have an assigned SID. Once assigned. 
+The  {{Fig-SID-Alloc}} shows an example of this conversion. The range is arbitrarily fixed between 60000 and 60099. Note that the module, the identity and the leaves have an assigned SID. 
 
 ~~~~
 $ pyang --sid-generate-file=60000:100 --sid-list sensor.yang 
@@ -151,4 +151,63 @@ Number of SIDs used : 11
 ~~~~
 {: #Fig-SID-Alloc title="JSON structure conform to the YANG DM."}
 
+To perform the allocation, the pyang command generates a .sid file in the JSON format, resulting itself of a YANG Data Model specified in {{I-D.ietf-core-sid}}. The {{Fig-SID-file}} gives an excerpt. 
 
+~~~~
+{
+  "assignment-range": [
+    {
+      "entry-point": 60000,
+      "size": 100
+    }
+  ],
+  "module-name": "sensor",
+  "module-revision": "unknown",
+  "item": [
+    {
+      "namespace": "module",
+      "identifier": "sensor",
+      "status": "unstable",
+      "sid": 60000
+    },
+    {
+      "namespace": "identity",
+      "identifier": "battery-indicator-base-type",
+      "status": "unstable",
+      "sid": 60001
+    },
+    ...
+~~~~
+{: #Fig-SID-file title="JSON structure conform to the YANG DM."}
+
+The serialization in CBOR of the JSON example {{Fig-JSON}} is given {{Fig-CBOR}}. Compared a compacted representation of the JSON structure (152 Bytes), the CORECONF structure is 24 byte long. If the size is different, the structure is the same. It is composed of embedded CBOR Maps (equivalent of JSON Object). The first key is a SID (60005 correspond to the container). Embedded CBOR Maps uses a delta notation to encode the keys. The key 5 correspond to SID 60005+5, so to the leaf "statusLED". Key 2 in the second CBOR Map corresponds the YANG list "sensorReadings", the elements of the list are stored in a CBOR Array.
+
+Note that in this example, the enum for "statusLED" (60005+5) is an integer and the identityref for "battery" (60005+1) is also an integer pointing to the  SID "med-level" (60004).
+
+~~~~
+b'a119ea65a305000119ea640282a2010002182aa201010216'
+
+Diagnostic notation:
+{60005: 
+  {5: 0, 
+   1: 60004, 
+   2: [
+     {1: 0, 
+      2: 42}, 
+     {1: 1, 
+      2: 22}
+     ]
+  }
+}
+~~~~
+{: #Fig-CBOR title="JSON structure conform to the YANG DM."}
+
+# Conversion between JSON and CBOR
+
+Even if the conversion between CBOR and JSON formats may look obvious, the conversion between these two formats coding data compatible with a YANG Data Model is not so trivial. The reason is that JSON uses ASCII identifiers for readability and CBOR prefers integers for compactness. The following table shows how YANG basic types are converted. 
+
+| YANG  | JSON | CBOR | 
+| int8  |      |      |
+| int16 |      |      |
+| int32 |      |      |
+| int64 |      |      |

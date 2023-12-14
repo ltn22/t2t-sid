@@ -5,7 +5,7 @@
 t2t Research Group                                            L. Toutain
 Internet-Draft                                                   M. Gudi
 Intended status: Standards Track  Institut MINES TELECOM; IMT Atlantique
-Expires: 15 June 2024                                   13 December 2023
+Expires: 16 June 2024                                   14 December 2023
 
 
         SID Extention to efficiently manipulate YANG Data Models
@@ -30,7 +30,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 15 June 2024.
+   This Internet-Draft will expire on 16 June 2024.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Toutain & Gudi            Expires 15 June 2024                  [Page 1]
+Toutain & Gudi            Expires 16 June 2024                  [Page 1]
 
 Internet-Draft                SID Extention                December 2023
 
@@ -64,8 +64,9 @@ Table of Contents
    2.  YANG Data model . . . . . . . . . . . . . . . . . . . . . . .   2
    3.  JSON serialization  . . . . . . . . . . . . . . . . . . . . .   4
    4.  CBOR Serialization  . . . . . . . . . . . . . . . . . . . . .   5
-   5.  Normative References  . . . . . . . . . . . . . . . . . . . .   6
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   6
+   5.  Conversion between JSON and CBOR  . . . . . . . . . . . . . .   8
+   6.  Normative References  . . . . . . . . . . . . . . . . . . . .   8
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   8
 
 1.  Introduction
 
@@ -108,8 +109,7 @@ Table of Contents
 
 
 
-
-Toutain & Gudi            Expires 15 June 2024                  [Page 2]
+Toutain & Gudi            Expires 16 June 2024                  [Page 2]
 
 Internet-Draft                SID Extention                December 2023
 
@@ -165,7 +165,7 @@ Internet-Draft                SID Extention                December 2023
 
 
 
-Toutain & Gudi            Expires 15 June 2024                  [Page 3]
+Toutain & Gudi            Expires 16 June 2024                  [Page 3]
 
 Internet-Draft                SID Extention                December 2023
 
@@ -221,7 +221,7 @@ Internet-Draft                SID Extention                December 2023
 
 
 
-Toutain & Gudi            Expires 15 June 2024                  [Page 4]
+Toutain & Gudi            Expires 16 June 2024                  [Page 4]
 
 Internet-Draft                SID Extention                December 2023
 
@@ -256,15 +256,13 @@ Internet-Draft                SID Extention                December 2023
 
    In CORECONF, the uniqueness is guaranteed through the use of positive
    integers called SID, which replaces the ASCII identifiers.
-   [I-D.ietf-core-sid] Module developers may ask for a SID range from
-   their authority.  For example, for an IETF module, the IANA will
-   allocate a SID range.
+   [I-D.ietf-core-sid] defines the allocation process.  Module
+   developers may ask for a SID range from their authority.  For
+   example, for an IETF module, the IANA will allocate a SID range.
 
-   The Figure 4 shows an exmaple of this conversion, note that the
-   module, the identity and the leaves have an assigned SID.  Once
-   assigned.  The assignation of a SID to an identifier cannot be
-   changed, once the mapping is published.
-
+   The Figure 4 shows an example of this conversion.  The range is
+   arbitrarily fixed between 60000 and 60099.  Note that the module, the
+   identity and the leaves have an assigned SID.
 
 
 
@@ -277,7 +275,9 @@ Internet-Draft                SID Extention                December 2023
 
 
 
-Toutain & Gudi            Expires 15 June 2024                  [Page 5]
+
+
+Toutain & Gudi            Expires 16 June 2024                  [Page 5]
 
 Internet-Draft                SID Extention                December 2023
 
@@ -304,7 +304,116 @@ Internet-Draft                SID Extention                December 2023
 
               Figure 4: JSON structure conform to the YANG DM.
 
-5.  Normative References
+   To perform the allocation, the pyang command generates a .sid file in
+   the JSON format, resulting itself of a YANG Data Model specified in
+   [I-D.ietf-core-sid].  The Figure 5 gives an excerpt.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Toutain & Gudi            Expires 16 June 2024                  [Page 6]
+
+Internet-Draft                SID Extention                December 2023
+
+
+   {
+     "assignment-range": [
+       {
+         "entry-point": 60000,
+         "size": 100
+       }
+     ],
+     "module-name": "sensor",
+     "module-revision": "unknown",
+     "item": [
+       {
+         "namespace": "module",
+         "identifier": "sensor",
+         "status": "unstable",
+         "sid": 60000
+       },
+       {
+         "namespace": "identity",
+         "identifier": "battery-indicator-base-type",
+         "status": "unstable",
+         "sid": 60001
+       },
+       ...
+
+              Figure 5: JSON structure conform to the YANG DM.
+
+   The serialization in CBOR of the JSON example Figure 3 is given
+   Figure 6.  Compared a compacted representation of the JSON structure
+   (152 Bytes), the CORECONF structure is 24 byte long.  If the size is
+   different, the structure is the same.  It is composed of embedded
+   CBOR Maps (equivalent of JSON Object).  The first key is a SID (60005
+   correspond to the container).  Embedded CBOR Maps uses a delta
+   notation to encode the keys.  The key 5 correspond to SID 60005+5, so
+   to the leaf "statusLED".  Key 2 in the second CBOR Map corresponds
+   the YANG list "sensorReadings", the elements of the list are stored
+   in a CBOR Array.
+
+   Note that in this example, the enum for "statusLED" (60005+5) is an
+   integer and the identityref for "battery" (60005+1) is also an
+   integer pointing to the SID "med-level" (60004).
+
+
+
+
+
+
+
+
+
+
+
+Toutain & Gudi            Expires 16 June 2024                  [Page 7]
+
+Internet-Draft                SID Extention                December 2023
+
+
+   b'a119ea65a305000119ea640282a2010002182aa201010216'
+
+   Diagnostic notation:
+   {60005:
+     {5: 0,
+      1: 60004,
+      2: [
+        {1: 0,
+         2: 42},
+        {1: 1,
+         2: 22}
+        ]
+     }
+   }
+
+              Figure 6: JSON structure conform to the YANG DM.
+
+5.  Conversion between JSON and CBOR
+
+6.  Normative References
 
    [I-D.ietf-core-sid]
               Veillette, M., Pelov, A., Petrov, I., Bormann, C., and M.
@@ -330,17 +439,17 @@ Internet-Draft                SID Extention                December 2023
 
 Authors' Addresses
 
+   Laurent Toutain
+   Institut MINES TELECOM; IMT Atlantique
+   2 rue de la Chataigneraie
 
 
 
-Toutain & Gudi            Expires 15 June 2024                  [Page 6]
+Toutain & Gudi            Expires 16 June 2024                  [Page 8]
 
 Internet-Draft                SID Extention                December 2023
 
 
-   Laurent Toutain
-   Institut MINES TELECOM; IMT Atlantique
-   2 rue de la Chataigneraie
    CS 17607
    35576 Cesson-Sevigne Cedex
    France
@@ -389,4 +498,7 @@ Internet-Draft                SID Extention                December 2023
 
 
 
-Toutain & Gudi            Expires 15 June 2024                  [Page 7]
+
+
+
+Toutain & Gudi            Expires 16 June 2024                  [Page 9]
