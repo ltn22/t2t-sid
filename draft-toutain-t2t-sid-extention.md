@@ -35,8 +35,10 @@ author:
 normative:  
   RFC2119:
   RFC7951:
+  RFC8949:
   RFC9254:
   I-D.ietf-core-sid:
+  I-D.ietf-core-comi:
 
 --- abstract
 
@@ -204,10 +206,197 @@ Diagnostic notation:
 
 # Conversion between JSON and CBOR
 
-Even if the conversion between CBOR and JSON formats may look obvious, the conversion between these two formats coding data compatible with a YANG Data Model is not so trivial. The reason is that JSON uses ASCII identifiers for readability and CBOR prefers integers for compactness. The following table shows how YANG basic types are converted. 
+Even if the conversion between CBOR and JSON formats may look obvious, the conversion between these two formats coding data compatible with a YANG Data Model is not so trivial. The reason is that JSON uses ASCII identifiers for readability and CBOR prefers integers for compactness.  The {{Tab-types}} summarizes some YANG types when coded in JSON ({{RFC7951}}) or CBOR ({{RFC8949}}).
 
-| YANG  | JSON | CBOR | 
-| int8  |      |      |
-| int16 |      |      |
-| int32 |      |      |
-| int64 |      |      |
+| YANG                | JSON     | CBOR | 
+|---------------------|----------|-----------|
+| int8, int16, int32, uint8, uint16, uint32   | number     |  +int, -int    |
+|  int64, uint64      | string      | +int, -int     |
+|  decimal64          | string      | CBOR Tag 4     |
+| binary              | base64     |  byte array    |
+| bits                | string     |  array    |
+| boolean             | boolean     |  boolean    |
+| identityref         | string     |  +int    |
+| enumeration         | string     | +int |
+{: #Tab-types title="YANG basic types in JSON and CBOR."}
+
+The conversion for CBOR to JSON is not direct, the YANG type need to be consider. For instance a integer could be converted into a number, a enum or an identityref. Note that for union, the conversion is simple since some CBOR Tags may be used to indicate how the integer is converted, but outside of the union, for a single value, there is no such clue.
+
+On the other direction, a JSON string may correspond to a 64 bit long number, an enumeration, an identityref.
+
+To perform the conversion, the YANG type is needed. But, popular tools such as yanglint or pyang are not currently manipulating CBOR representation. Futhermore, these tools cannot run on constrained devices. To overcome these problems, we propose to extend the .sid file with more information. The modified the pyang code (see https://github.com/ltn22/pyang/tree/sid-extension) adding some information to the .sid file when "--sid-extension" argument is provided.
+
+This extension contains a "type" key in the JSON Object describing the mapping between the SID and the identifier, if the node is a leaf (see {{Fig-SID-extension}}).
+
+
+~~~~
+...
+    {
+      "namespace": "data",
+      "identifier": "/sensor:sensorObject",
+      "status": "unstable",
+      "sid": 60005
+    },
+    {
+      "namespace": "data",
+      "identifier": "/sensor:sensorObject/battery",
+      "status": "unstable",
+      "sid": 60006,
+      "type": "identityref"
+    },
+    {
+      "namespace": "data",
+      "identifier": "/sensor:sensorObject/sensorReadings",
+      "status": "unstable",
+      "sid": 60007
+    },
+    {
+      "namespace": "data",
+      "identifier": "/sensor:sensorObject/sensorReadings/index",
+      "status": "unstable",
+      "sid": 60008,
+      "type": "uint8"
+    },
+    {
+      "namespace": "data",
+      "identifier": "/sensor:sensorObject/sensorReadings/sensorValue",
+      "status": "unstable",
+      "sid": 60009,
+      "type": "uint32"
+    },
+    {
+      "namespace": "data",
+      "identifier": "/sensor:sensorObject/statusLED",
+      "status": "unstable",
+      "sid": 60010,
+      "type": {
+        "0": "green",
+        "1": "yellow",
+        "2": "red"
+      }
+    }
+...
+~~~~
+{: #Fig-SID-extension title="SID "type" extension."}
+
+The "type" key added to leaf nodes contains several information:
+
+* when the "type" key is not present, the node is a not leaf and there is no need for type conversion.
+* when the type of "type" is a string, it gives the YANG type of the leaf, as defined in the YANG Data Model. If the YANG type derives from an identityref, the value "identityref" is given instead of the YANG type specified in the module. In that case, in the CBOR notation, the have a pair "{ ...., SID1: value1, ...} in the CBOR Map. A first lookup at the .sid file for SID1 returns that the type is "identityref", a second lookup for value1 in the "identity" namespace, returns the ASCII identifier. 
+* when the type of "type" is an JSON Object, then the leaf is an YANG enumeration, an the CBOR Map gives the mapping between integer and strings.
+* when the type of "type" is a JSON Array, then the YANG leaf is a union. Elements of the Array list the possible types. In that case, the conversion is leaded by the CBOR Tags associated to the value. 
+
+<!-- Should be https://github.com/alex-fddz/pycoreconf, some bugs items => item and pb with self.name -->
+We developed the pycoreconf Python module to facilitate the conversion between JSON and CBOR (https://github.com/ltn22/pycoreconf). The {{Fig-pcc-ex}} gives an example of a Python script using this module. It takes in input, the .sid file and a JSON structure. It transforms it into a CBOR structure, and back to JSON representation.
+
+~~~~ python
+# pycoreconf sample: "basic"
+# This script demonstrates the basic usage of pycoreconf
+#  using a simple YANG datamodel.
+
+import pycoreconf
+import binascii
+import cbor2 as cbor
+
+# Create the model object
+ccm = pycoreconf.CORECONFModel("sensor@unknown.sid")
+
+# Read JSON configuration file
+config_file = "output.json"
+
+with open(config_file, "r") as f:
+    json_data = f.read()
+print("Input JSON config data =\n", json_data, sep='')
+
+# Convert configuration to CORECONF/CBOR
+cbor_data = ccm.toCORECONF(config_file) # can also take json_data
+print("Encoded CBOR data (CORECONF payload) =", binascii.hexlify(cbor_data))
+print (cbor.loads(cbor_data))
+
+# Decode CBOR data back to JSON configuration data
+decoded_json = ccm.toJSON(cbor_data)
+print("Decoded config data =", decoded_json)
+~~~~
+{: #Fig-pcc-ex title="pycoreconf module."}
+
+The result with the JSON structure of {{Fig-JSON}} is given {{Fig-pcc-res}}. it shows that the JSON format car ne converted in CBOR and vice versa, just by using the extended .sid file.
+
+~~~~ 
+Input JSON config data =
+{
+  "sensor:sensorObject": {
+    "statusLED": "green",
+    "battery": "sensor:med-level",
+    "sensorReadings": [
+      {
+        "index": 0,
+        "sensorValue": 42
+      },
+      {
+        "index": 1,
+        "sensorValue": 22
+      }	
+    ]
+  }
+}
+
+Encoded CBOR data (CORECONF payload) = b'a119ea65a305000119ea640282a2010002182aa201010216'
+{60005: {5: 0, 1: 60004, 2: [{1: 0, 2: 42}, {1: 1, 2: 22}]}}
+Decoded config data = {"sensor:sensorObject": {"statusLED": "green", "battery": "med-level", "sensorReadings": [{"index": 0, "sensorValue": 42}, {"index": 1, "sensorValue": 22}]}}
+~~~~
+{: #Fig-pcc-res title="pycoreconf module."}
+
+
+# Navigating the CORECONF structure.
+
+As we saw, the CORECONF data is structures is structured as a tree. The {{Fig-coreconf-ex}} gives an example for the example module described {{Fig-YDM}}. The numbers are the SID associated to the YANG Data Model. {{I-D.ietf-core-comi}} defines how queries are made on this structure to get the full tree or a sub tree.
+
+
+~~~~~~
+                      sensorObject
+                         60005
+           battery     LED |    sensorReadings
+                +----------+----------+
+                |          |          |
+              60006      60010      60007
+                                      |
+               +-----------+----------+-----------+ 
+        index  |           |          |           |  sensorValue
+        +---------+ +----------+ +----------+ +----------+     
+        |         | |          | |          | |          |
+        60008 60009 60008  60009 60008  60009 60008  60009                                 
+
+~~~~~~
+{: #Fig-coreconf-ex title="pycoreconf module."}
+
+Requesting the SID corresponding to the module (60005), will return the full tree. Requesting "battery" leaf (60006) will return the leaf and the associated value, as well as Requesting "sensorReadings" (60007) will return the subtree will all the values. Going deeper in this sub-tree impose the use of keys. For instance to get a specific "sensorValue" imposes to provide the key "index" (60008).
+
+In {{I-D.ietf-core-comi}}, the series of keys needed to reach a specific element is provided either in the query string or in the fetch. Only one list is provided in {{Fig-coreconf-ex}}, but several lists can be embedded, and each level may require one or more keys. So, to be processed, the YANG Data Model as to be known. 
+
+To avoid the parsing of the YANG Data Model in a constrained device, we propose to summarize this information into a JSON Object, generated by pyang with the "--sid-extension" argument.
+
+~~~~~
+  "key-mapping": {
+    "60007": [
+      60008
+    ]
+  }
+~~~~~
+{: #Fig-key-mapping title="pycoreconf module."}
+
+The "key-mapping" key points out to a JSON Object, where the JSON key is a SID corresponding to a YANG list key and the value is a JSON array of the SIDs acting as a YANG key for that YANG list. The "key-mapping" JSON Object indicates:
+
+* that a SID is a YANG list, since its value appears as a JSON key in the "key-mapping" structure,
+* the number of elements in the corresponding array indicates how many items are involved as a YANG list key. The value for these item can be taken from the request.
+* the array indicates also which SIDs contain the value that must compared to the YANG list key sent in the request.
+
+With the information contained in the "key-mapping" structure it is possible to browse any CORECONF structure an return the appropriate requested SID.
+
+# Linking to real values
+
+When querying a YANG Data Model, as the one provided in {{Fig-YDM}}, some leaves contains information that are available outside on the model itself. This can be the case of the "statusLED" leaf, where an action is require to setup the appropriate color when the leaf is write, or the "sensorValue" which interact with a physical sensor on the managed device.
+
+We wrote a script taking the .sid file generated with pyang and the "--sid-extension" argument to generate C code for generating template for these functions. We try keep SID transparent and uses as much as possible the YANG identifiers which are easier to manipulate by a programmer.
+
+
+
