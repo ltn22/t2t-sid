@@ -400,14 +400,15 @@ We wrote a script taking the .sid file generated with pyang and the "--sid-exten
 
 The idea is to abstract the underlying SIDs as much as possible from the developer without having to hide it from them.
 
-~~~~~C
-```bash
-# * The tool is hosted at https://github.com/manojgudi/ccoreconf/tree/stub_generation/tools
-# * For the SID file above (sensor@unknown.sid), the function prototypes can be generated with file name "sensor_prototypes" using the following command:
-$ python generateStubs.py sensor@unknown.sid "sensor_prototypes"
+
+ * The tool is hosted at https://github.com/manojgudi/ccoreconf/tree/stub_generation/tools
+ * For the SID file above (sensor@unknown.sid), the function prototypes can be generated with file name "sensor_prototypes" using the following command:
 
 Headers
 -----------
+~~~~~C
+$ python generateStubs.py sensor@unknown.sid "sensor_prototypes"
+
 
 #include <stdlib.h>
 #include <stdint.h>
@@ -431,7 +432,9 @@ void read_sensorReadings(uint8_t index);
 uint32_t read_sensorValue(uint8_t index);
 void read_index(void);
 void read_statusLED(void);
+~~~~~
 
+~~~~~C
 Code File
 -----------
 
