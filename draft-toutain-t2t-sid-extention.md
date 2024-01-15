@@ -373,8 +373,8 @@ To avoid the parsing of the YANG Data Model in a constrained device, we propose 
 
 ~~~~~json
   "key-mapping": {
-    "/sensor:sensorObject/sensorReadings" : 
-        ["/sensor:sensorObject/sensorReadings/index"]
+    "60007" : 
+        [60008]
   }
 ~~~~~
 {: #Fig-key-mapping title="pycoreconf module."}
