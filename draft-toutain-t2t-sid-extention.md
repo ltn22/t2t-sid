@@ -334,7 +334,7 @@ Input JSON config data =
       {
         "index": 1,
         "sensorValue": 22
-      }	
+      } 
     ]
   }
 }
@@ -566,7 +566,7 @@ The program also smartly maps _enum_ type from SID to a corresponding _enum_ typ
 
  For rest of the non-leaf functions and leaves with type of _identityref_ the program infers it to be a _char *_ (since the types are non-standard).
 
-```c
+~~~~~ c
 uint32_t  read_sensorValue(uint8_t index){
     // Initialize the leaf if it has a return type with a default value;
     uint32_t sensorValueInstance  = 0;
@@ -575,5 +575,5 @@ uint32_t  read_sensorValue(uint8_t index){
     // Return the leaf 
     return sensorValueInstance;
 }
-```
+~~~~~
 
