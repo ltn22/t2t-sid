@@ -34,15 +34,18 @@ author:
   email: manoj.gudi@imt-atlantique.net
 normative:  
   RFC2119:
+  RFC7228:
   RFC7951:
   RFC8949:
   RFC9254:
   I-D.ietf-core-sid:
   I-D.ietf-core-comi:
 
-# Abstract
+--- abstract
 
-As the Internet of Things (IoT) systems are becoming more pervasive with their rapid adoption, they are also becoming more complex in their architecture. Hence, a tool is required to generate prototype code based on the YANG models for constrained devices {{RFC7228}}  to improve interoperability and increase the reusability of software components. A novel approach is introduced in this document to generate software prototypes (also called stubs) in the C language for the CORECONF protocol {{I-D.ietf-core-comi}} using YANG Schema Item iDentifiers (YANG SID {{draft-ietf-core-sid-24}}). These stubs greatly reduce the complexity of navigating the CORECONF structure by abstracting the corresponding YANG SIDs. This document elaborates the procedure to generate YANG SIDs for a given YANG model of a system, then generates C stubs using the tools developed by the authors with the help of an example (sensor.yang file).
+As the Internet of Things (IoT) systems are becoming more pervasive with their rapid adoption, they are also becoming more complex in their architecture. Hence, a tool is required to generate prototype code based on the YANG models for constrained devices {{RFC7228}}  to improve interoperability and increase the reusability of software components. A novel approach is introduced in this document to generate software prototypes (also called stubs) in the C language for the CORECONF protocol {{I-D.ietf-core-comi}} using YANG Schema Item iDentifiers (YANG SID {{I-D.ietf-core-sid}}). These stubs greatly reduce the complexity of navigating the CORECONF structure by abstracting the corresponding YANG SIDs. This document elaborates the procedure to generate YANG SIDs for a given YANG model of a system, then generates C stubs using the tools developed by the authors with the help of an example (sensor.yang file).
+
+--- middle
 
 # Introduction
 
@@ -331,7 +334,7 @@ Input JSON config data =
       {
         "index": 1,
         "sensorValue": 22
-      }	
+      } 
     ]
   }
 }
@@ -398,15 +401,14 @@ The idea of the tool is to create aliases for the identifiers which also contain
 
  * The tool is hosted at https://github.com/manojgudi/ccoreconf/tree/stub_generation/tools
 
- * For the SID file above (sensor@unknown.sid), the second argument in the command- _"sensor_prototypes"_ instructs the tool to create two files _sensor_prototypes.h_ and _sensor_prototypes.c_ for writing headers and function code  respectively.
+ * For the SID file above (sensor@unknown.sid), the second argument in the command- _"sensor_prototypes"_ instructs the tool to create two files _sensor_prototypes.h_ and _sensor_prototypes.c_ for writing headers and function code  respectively. To generate code, simply run the tool:
 
-   ### Code generation
 
 ~~~~~bash
 $ python generateStubs.py sensor@unknown.sid "sensor_prototypes"
 ~~~~~
 
-```c
+~~~~~ c
 
 //Headers
 //-----------
@@ -436,7 +438,7 @@ char *  read_battery(void);
 void  read_sensorReadings(uint8_t index);
 uint32_t  read_sensorValue(uint8_t index);
 enum StatusledEnum read_statusLED(void);
-```
+~~~~~
 
 ~~~~~C
 //Code File
@@ -564,7 +566,7 @@ The program also smartly maps _enum_ type from SID to a corresponding _enum_ typ
 
  For rest of the non-leaf functions and leaves with type of _identityref_ the program infers it to be a _char *_ (since the types are non-standard).
 
-```c
+~~~~~ c
 uint32_t  read_sensorValue(uint8_t index){
     // Initialize the leaf if it has a return type with a default value;
     uint32_t sensorValueInstance  = 0;
@@ -573,5 +575,5 @@ uint32_t  read_sensorValue(uint8_t index){
     // Return the leaf 
     return sensorValueInstance;
 }
-```
+~~~~~
 
