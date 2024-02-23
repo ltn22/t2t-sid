@@ -78,8 +78,7 @@ to form a JSON structure conform to a YANG Data Model:
 
 * Leaves are represented as JSON objects, the key being the leaf name.
 * Lists are defined through arrays, 
-* Identityref is a string containing the identifier in the YANG naming hierarchy to an identity,
-* ...
+* Identityref is a string containing the identifier in the YANG naming hierarchy to an identity.
 
 The YANG Data Model, in {{Fig-YDM}}, is used to illustrate how data will be serialized. It defines a container
 representing a physical object able to perform several measurements. The physical object is battery powered has a status led able 
@@ -573,7 +572,7 @@ enum StatusledEnum read_statusLED(void);
 
  Now let us understand what is generated in *sid_prototypes.c* by looking at auto-generated function prototype *read_sensorValue*. The program auto-infers that the leaf _sensorValue_ can only be reached through a valid SID key (that is: index), so a function trying to read _sensorValue_ from its coreconf instance will require a function parameter _index_. Also since _sensorValue_ has a well-defined type in C, the function will try to return that _uint32_t_.
 
-The program also smartly maps _enum_ type from SID to a corresponding _enum_ type in C as 
+The program also maps _enum_ type from SID to a corresponding _enum_ type in C as shown for the leaf _statusLED_. The value of these enums is as specified in the corresponding YANG model. If unspecified, the values are auto-assigned.
 
  For rest of the non-leaf functions and leaves with type of _identityref_ the program infers it to be a _char *_ (since the types are non-standard).
 
