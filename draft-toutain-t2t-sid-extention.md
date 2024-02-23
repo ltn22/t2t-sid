@@ -32,6 +32,15 @@ author:
   city: 35576 Cesson-Sevigne Cedex
   country: France
   email: manoj.gudi@imt-atlantique.net
+- ins: Alejandro Fernadez
+  name: Manoj Gudi
+  org: Institut MINES TELECOM; IMT Atlantique
+  street:
+  - 2 rue de la Chataigneraie
+  - CS 17607
+  city: 35576 Cesson-Sevigne Cedex
+  country: France
+  email: javier-alejandro.fernandez-cordova@imt-atlantique.net 
 normative:  
   RFC2119:
   RFC7951:
@@ -47,7 +56,8 @@ As the Internet of Things (IoT) systems are becoming more pervasive with their r
 # Introduction
 
 YANG modeling language is very popular for node configuration and retrieving the the state of a device.  
-XML and JSON are also to popular way to serialize the data model. Recently a new serialization format has
+XML and JSON are also to popular way to serialize data in conformance with the data model. Recently a 
+new serialization format has
 been published, allowing a more compact representation of the information. This new format is based on CBOR
 and the YANG identifier instead of been represented by a unique ASCII string, are mapped to an unique integer.
 
@@ -65,7 +75,7 @@ to form a JSON structure conform to a YANG Data Model:
 
 * Leaves are represented as JSON objects, the key being the leaf name.
 * Lists are defined through arrays, 
-* Identityref is a string0 containing the identifier in the YANG naming hierarchy to an identity,
+* Identityref is a string containing the identifier in the YANG naming hierarchy to an identity,
 * ...
 
 The YANG Data Model, in {{Fig-YDM}}, is used to illustrate how data will be serialized. It defines a container
@@ -96,7 +106,7 @@ module: sensor
 # JSON serialization
 
 An example of data, serialized with JSON, and conform to the YANG Data Model, is given {{Fig-JSON}}. Embedded JSON Objects allows 
-to represent the hierarchy. The key of the outer JSON Object is composed of the module name and the container name. The embedded JSON Object associated to this this contains the leaves as keys. The YANG list is represented by an JSON Array.
+to represent the hierarchy. The key of the outer JSON Object is composed of the module name and the container name. The embedded JSON Object associated to this  contains the leaves as keys. The YANG list is represented by an JSON Array.
 
 ~~~~
 {
@@ -124,7 +134,7 @@ JSON notation is verbose for constrained networks and objects. To optimize the s
 
 In CORECONF, the uniqueness is guaranteed through the use of positive integers called SID, which replaces the ASCII identifiers.  {{I-D.ietf-core-sid}} defines the allocation process. Module developers may ask for a SID range from their authority. For example, for an IETF module, the IANA will allocate a SID range. 
 
-The  {{Fig-SID-Alloc}} shows an example of this conversion. The range is arbitrarily fixed between 60000 and 60099. Note that the module, the identity and the leaves have an assigned SID. 
+The  {{Fig-SID-Alloc}} shows an example of this conversion. The range is arbitrarily fixed between 60000 and 60099. Note that the module, the identities and the leaves have an assigned SID. 
 
 ~~~~
 $ pyang --sid-generate-file=60000:100 --sid-list sensor.yang 
@@ -178,7 +188,7 @@ To perform the allocation, the pyang command generates a .sid file in the JSON f
 ~~~~
 {: #Fig-SID-file title="JSON structure conform to the YANG DM."}
 
-The serialization in CBOR of the JSON example {{Fig-JSON}} is given {{Fig-CBOR}}. Compared a compacted representation of the JSON structure (152 Bytes), the CORECONF structure is 24 byte long. If the size is different, the structure is the same. It is composed of embedded CBOR Maps (equivalent of JSON Object). The first key is a SID (60005 correspond to the container). Embedded CBOR Maps uses a delta notation to encode the keys. The key 5 correspond to SID 60005+5, so to the leaf "statusLED". Key 2 in the second CBOR Map corresponds the YANG list "sensorReadings", the elements of the list are stored in a CBOR Array.
+The serialization in CBOR of the JSON example {{Fig-JSON}} is given {{Fig-CBOR}}. Compared a compacted representation of the JSON structure (152 Bytes), the CORECONF structure is 24 byte long. If the size is different, the structure remains the same. It is composed of embedded CBOR Maps (equivalent of JSON Object). The first key is a SID (60005 correspond to the container). Embedded CBOR Maps uses a delta notation to encode the keys. The key 5 correspond to SID 60005+5, so to the leaf "statusLED". Key 2 in the second CBOR Map corresponds the YANG list "sensorReadings", the elements of the list are stored in a CBOR Array.
 
 Note that in this example, the enum for "statusLED" (60005+5) is an integer and the identityref for "battery" (60005+1) is also an integer pointing to the  SID "med-level" (60004).
 
@@ -216,7 +226,7 @@ Even if the conversion between CBOR and JSON formats may look obvious, the conve
 | enumeration         | string     | +int |
 {: #Tab-types title="YANG basic types in JSON and CBOR."}
 
-The conversion for CBOR to JSON is not direct, the YANG type need to be consider. For instance a integer could be converted into a number, a enum or an identityref. Note that for union, the conversion is simple since some CBOR Tags may be used to indicate how the integer is converted, but outside of the union, for a single value, there is no such clue.
+The conversion for CBOR to JSON is not direct, the YANG type needs to be consider. For instance a integer could be converted into a number, an enum or an identityref. Note that for union, the conversion is simple since some CBOR Tags may be used to indicate how the integer is converted, but outside of the union, for a single value, there is no such clue.
 
 On the other direction, a JSON string may correspond to a 64 bit long number, an enumeration, an identityref.
 
@@ -315,7 +325,7 @@ print("Decoded config data =", decoded_json)
 ~~~~
 {: #Fig-pcc-ex title="pycoreconf module."}
 
-The result with the JSON structure of {{Fig-JSON}} is given {{Fig-pcc-res}}. it shows that the JSON format car ne converted in CBOR and vice versa, just by using the extended .sid file.
+The result with the JSON structure of {{Fig-JSON}} is given {{Fig-pcc-res}}. It shows that the JSON format can be converted in CBOR and vice versa, just by using the extended .sid file.
 
 ~~~~ 
 Input JSON config data =
@@ -345,7 +355,7 @@ Decoded config data = {"sensor:sensorObject": {"statusLED": "green", "battery": 
 
 # Navigating the CORECONF structure.
 
-As we saw, the CORECONF data is structures is structured as a tree. The {{Fig-coreconf-ex}} gives an example for the example module described {{Fig-YDM}}. The numbers are the SID associated to the YANG Data Model. {{I-D.ietf-core-comi}} defines how queries are made on this structure to get the full tree or a sub tree.
+As we saw, the CORECONF data  is structured as a tree. The {{Fig-coreconf-ex}} gives an example for the example module described {{Fig-YDM}}. The numbers are the SID associated to the YANG Data Model. {{I-D.ietf-core-comi}} defines how queries are made on this structure to get the full tree or a sub tree.
 
 
 ~~~~~~
@@ -389,7 +399,8 @@ With the information contained in the "key-mapping" structure it is possible to 
 
 # Linking to real values
 
-When querying a YANG Data Model, as the one provided in {{Fig-YDM}}, some leaves contains information that are available outside on the model itself. This can be the case of the "statusLED" leaf, where an action is require to setup the appropriate color when the leaf is write, or the "sensorValue" which interact with a physical sensor on the managed device.
+
+When querying a YANG Data Model, as the one provided in {{Fig-YDM}}, some leaves contains information that are available outside on the model itself. This can be the case of the "statusLED" leaf, where an action is require to setup the appropriate color when the leaf is write, or the "sensorValue" which interact with a physical sensor on the managed device. Other leaves, such as "index" do not require interaction, the value is directly stored in the database.
 
 We wrote a script taking the .sid file generated with pyang and the "--sid-extension" argument to generate C code for generating template for these functions. We try keep SID transparent and uses as much as possible the YANG identifiers which are easier to manipulate by a programmer.
 
