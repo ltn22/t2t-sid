@@ -32,15 +32,15 @@ author:
   city: 35576 Cesson-Sevigne Cedex
   country: France
   email: manoj.gudi@imt-atlantique.net
-- ins: Alejandro Fernadez
-  name: Manoj Gudi
+- ins: J. A. Fernandez
+  name: Javier A. Fernandez
   org: Institut MINES TELECOM; IMT Atlantique
   street:
   - 2 rue de la Chataigneraie
   - CS 17607
   city: 35576 Cesson-Sevigne Cedex
   country: France
-  email: javier-alejandro.fernandez-cordova@imt-atlantique.net 
+  email: javier-alejandro.fernandez@imt-atlantique.fr 
 normative:  
   RFC2119:
   RFC7228:
