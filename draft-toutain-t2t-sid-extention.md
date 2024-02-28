@@ -59,7 +59,7 @@ As the Internet of Things (IoT) systems are becoming more pervasive with their r
 # Introduction
 
 The YANG modeling language is very popular for node configuration and retrieving the the state of a device.  
-XML and JSON are also two popular tools to serialize data in conformance with the data model. Recently, a 
+XML and JSON are also two popular formats to serialize data in conformance with the data model. Recently, a 
 new serialization format has
 been published, allowing a more compact representation of the information. This new format is based on CBOR
 and the YANG identifier; instead of being represented by a unique ASCII string, values are mapped to an unique integer.
