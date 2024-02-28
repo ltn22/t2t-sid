@@ -361,7 +361,7 @@ Decoded config data = {"sensor:sensorObject": {"statusLED": "green", "battery": 
 As we saw, the CORECONF data  is structured as a tree. The {{Fig-coreconf-ex}} gives an example for the example module described in {{Fig-YDM}}. The numbers are the SID associated to the YANG Data Model. {{I-D.ietf-core-comi}} defines how queries are made on this structure to get the full tree or a sub tree.
 
 
-~~~~~~ aasvg
+~~~~~~ 
                       sensorObject
                          60005
            battery     LED |    sensorReadings
