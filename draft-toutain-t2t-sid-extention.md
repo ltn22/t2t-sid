@@ -10,8 +10,8 @@ pi:
   compact: 'yes'
   toc: 'yes'
 
-title: SID Extention to efficiently manipulate YANG Data Models
-abbrev: SID Extention
+title: SID Extension to efficiently manipulate YANG Data Models
+abbrev: SID Extension
 wg: t2t Research Group
 author:
 - ins: L. Toutain
